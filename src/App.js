@@ -1,25 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { Routes, Route } from "react-router-dom";
 
-function App() {
+import {
+  WelcomeBack,
+  Home,
+  Payments,
+  Budget,
+  Cards,
+  More,
+  Sendmoney,
+  ReduxTest,
+  BeCareful,
+} from "./components";
+
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <div className="flex flex-col min-h-screen ">
+        <div className=" mb-14">
+          <Routes>
+            <Route exact path="/login" element={<WelcomeBack />} />
+            <Route exact path="/" element={<Home />} />
+            <Route exact path="/payments" element={<Payments />} />
+            <Route exact path="/budget" element={<Budget />} />
+            <Route exact path="/cards" element={<Cards />} />
+            <Route exact path="/more" element={<More />} />
+            <Route exact path="/sendmoney" element={<Sendmoney />} />
+            <Route exact path="/REDT" element={<ReduxTest />} />
+            <Route exact path="/becareful" element={<BeCareful />} />
+          </Routes>
+        </div>
+      </div>
+    </>
   );
-}
+};
 
 export default App;
