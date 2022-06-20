@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 import { GrPrevious } from "react-icons/gr";
+
 import FriendsOnKuda from "./FriendsOnKuda";
 import { client } from "../client";
 
@@ -9,13 +10,15 @@ import {
   transferAmount,
   accountNumber,
   accountName,
+  receiversAcntBal,
+  description,
+  idReceiver,
 } from "../features/accountName/transactDetailsSlice";
-import { useNavigate } from "react-router-dom";
 
 const Sendmoney = () => {
   const dispatch = useDispatch();
-  const [userInfo, setUserInfo] = useState([]);
-  const [users, setUsers] = useState([]);
+  const users = useSelector((state) => state.transact.users);
+  const sendersNumbr = useSelector((state) => state.transact.sendersAcntNumber);
   const [inVal, setInVal] = useState("");
   const [trandsferAmt, settrandsferAmt] = useState("");
   const [receiver, setReceiver] = useState("");
@@ -26,15 +29,8 @@ const Sendmoney = () => {
 
   const [accountNme, setAccountNme] = useState("");
 
-  useEffect(() => {
-    const query = '*[_type == "userInfo"]';
-
-    client.fetch(query).then((data) => {
-      setUserInfo(data[1]);
-      setUsers(data);
-      console.log(users);
-    });
-  }, []);
+  const accB = useSelector((state) => state.transact.sendersAcntBal);
+  const accountBalance = parseInt(accB);
 
   useEffect(() => {
     if (note.length <= 0) {
@@ -45,7 +41,7 @@ const Sendmoney = () => {
   }, [note]);
 
   useEffect(() => {
-    if (parseInt(trandsferAmt) > userInfo.accountBalance) {
+    if (parseInt(trandsferAmt) > accountBalance) {
       setValidAmount(false);
     } else {
       setValidAmount(true);
@@ -58,6 +54,7 @@ const Sendmoney = () => {
     dispatch(transferAmount(trandsferAmt));
     dispatch(accountName(accountNme));
     dispatch(accountNumber(inVal));
+    dispatch(description(note));
 
     if (realUser && validAmount && validNote) {
       navigate("/becareful");
@@ -79,24 +76,31 @@ const Sendmoney = () => {
 
     console.log(`Form submitted,`);
   };
-
   let num = parseInt(inVal);
   const handler = (e) => {
     if (e.key === "Enter") {
       users.forEach((usr) => {
-        if (inVal.length === 10 && usr.accountNumber === num) {
-          setReceiver(usr.firstName + " " + usr.lastName);
-          setAccountNme(usr.firstName + " " + usr.lastName);
-          setRealUser(true);
-        }
-        // if (inVal.length === 10 && usr.accountNumber !== num) {
-        //   setReceiver("account not found");
-        // }
-        if (inVal.length < 10 || inVal.length > 10) {
-          setReceiver("Account number must be 10 digits ");
-        }
-        if (inVal.length === 0) {
-          setReceiver(" ");
+        if (sendersNumbr === num) {
+          setReceiver("Can't send money to your account");
+        } else {
+          if (inVal.length === 10) {
+            if (Object.values(usr).includes(num)) {
+              setReceiver(usr.firstName + " " + usr.lastName);
+              setAccountNme(usr.firstName + " " + usr.lastName);
+              dispatch(receiversAcntBal(usr.accountBalance));
+              dispatch(idReceiver(usr._id));
+              setRealUser(true);
+            }
+            // if (!Object.values(usr).includes(num)) {
+            //   setReceiver("mil");
+            // }
+          }
+          if (inVal.length < 10 || inVal.length > 10) {
+            setReceiver("Account number must be 10 digits ");
+          }
+          if (inVal.length === 0) {
+            setReceiver(" ");
+          }
         }
       });
     }
@@ -107,19 +111,32 @@ const Sendmoney = () => {
       {/* {!realUser ? ( */}
       <div className="flex flex-col h-screen">
         <section className="m-3 my-5 grid grid-cols-3 justify-center items-center">
-          <GrPrevious className=" ml-1 text-xl text-indigo-900" />
+          <Link to="/payments">
+            <GrPrevious className=" ml-1 text-xl text-indigo-900" />
+          </Link>
           <p className="-ml-2 justify-self-center font-bold text-lg">
             Send Money
           </p>
           <div className=" place-self-end ">
-            <button
-              type="submit"
-              on
-              onClick={handleclick1}
-              className="underline bg-indigo-800 opacity-50 hover:opacity-100 rounded text-white px-5 py-0.5 "
-            >
-              next
-            </button>
+            {realUser && validAmount && validNote ? (
+              <button
+                type="submit"
+                on
+                onClick={handleclick1}
+                className="underline bg-indigo-800 rounded text-white px-5 py-0.5 "
+              >
+                next
+              </button>
+            ) : (
+              <button
+                type="submit"
+                on
+                onClick={handleclick1}
+                className="underline bg-indigo-800 opacity-50 hover:opacity-100 rounded text-white px-5 py-0.5 "
+              >
+                next
+              </button>
+            )}
           </div>
         </section>
         <div className="border"></div>
@@ -138,9 +155,7 @@ const Sendmoney = () => {
               <div className="flex justify-between text-sm">
                 <p>Amount </p>
                 <p>
-                  Balance: ₦
-                  {userInfo.accountBalance &&
-                    new Intl.NumberFormat().format(userInfo.accountBalance)}
+                  Balance: ₦{new Intl.NumberFormat().format(accountBalance)}
                 </p>
               </div>
               <input
@@ -153,10 +168,10 @@ const Sendmoney = () => {
                 placeholder="Amount"
                 required
               />
-              {parseInt(trandsferAmt) > userInfo.accountBalance ? (
+              {parseInt(trandsferAmt) > accountBalance ? (
                 <p className="text-xs text-red-700">
                   Amount shouldn't exceed{" "}
-                  {new Intl.NumberFormat().format(userInfo.accountBalance)}
+                  {new Intl.NumberFormat().format(accountBalance)}
                 </p>
               ) : (
                 <p></p>

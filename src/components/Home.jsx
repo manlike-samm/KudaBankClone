@@ -1,32 +1,54 @@
 import React, { useEffect, useState } from "react";
-import userAva from "../images/user1.jpg";
+import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+
 import {
   AccountBalanceRounded,
   AddCircle,
   Apps,
   SavingsRounded,
 } from "@mui/icons-material";
-import HomeSpend from "./HomeSpend";
 
 import { GiPieChart } from "react-icons/gi";
 import { IoIosSend, IoIosHome, IoIosCard } from "react-icons/io";
 import { IoApps } from "react-icons/io5";
-import { Link } from "react-router-dom";
 
+import HomeSpend from "./HomeSpend";
+import userAva from "../images/user1.jpg";
 import { client } from "../client";
+
+import {
+  idSender,
+  sendersAcntBal,
+  sendersAcntNumber,
+  users,
+} from "../features/accountName/transactDetailsSlice";
 
 const Home = () => {
   const [userInfo, setUserInfo] = useState([]);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const query = '*[_type == "userInfo"]';
 
     client.fetch(query).then((data) => {
       setUserInfo(data[1]);
-      localStorage.setItem("user", JSON.stringify(data[1]));
+      dispatch(users(data));
+      //   localStorage.setItem("user", JSON.stringify(data[1]));
     });
   }, []);
+  console.log(userInfo);
+  useEffect(() => {
+    if (userInfo) {
+      dispatch(sendersAcntBal(userInfo.accountBalance));
+      dispatch(sendersAcntNumber(userInfo.accountNumber));
+      dispatch(idSender(userInfo._id));
+    }
+  }, [sendersAcntBal, userInfo]);
 
+  const accB = useSelector((state) => state.transact.sendersAcntBal);
+  const accountBalance = parseInt(accB);
   return (
     <>
       <div className="m-4">
@@ -50,7 +72,7 @@ const Home = () => {
           <p className="text-xs mt-2">Account Balance</p>
           <p className="text-2xl font-bold text-sky-400">
             ₦
-            {userInfo.accountBalance &&
+            {userInfo?.accountBalance &&
               new Intl.NumberFormat().format(userInfo.accountBalance)}
           </p>
           <div className="flex justify-around space-x-12 my-2">

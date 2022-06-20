@@ -9,7 +9,6 @@ import warning from "../images/warning.png";
 const BeCareful = () => {
   const accName = useSelector((state) => state.transact.accountName);
   const trnsAmnt = useSelector((state) => state.transact.transferAmount);
-  const dNtt = useSelector((state) => state.transact.accountNumber);
 
   const navigate = useNavigate();
 
@@ -17,7 +16,10 @@ const BeCareful = () => {
     navigate("/sendmoney");
   };
 
-  console.log(accName);
+  const handleSubmit = () => {
+    navigate("/confirm");
+  };
+
   return (
     <>
       <div className="flex m-3 flex-col h-screen">
@@ -59,7 +61,7 @@ const BeCareful = () => {
           </p>
           <br />
           <br />
-          <form>
+          <form onSubmit={handleSubmit}>
             <div className=" bg-neutral-300 mb-1 px-2 py-1.5 rounded">
               <input
                 type="checkbox"
@@ -80,9 +82,14 @@ const BeCareful = () => {
                 I understand this can't be reversed.
               </label>
             </div>
-            <button className="bg-indigo-800 text-white underline w-full rounded py-2 mt-4 ">
+            {/* <Link to="/confirm"> */}
+            <button
+              type="submit"
+              className="bg-indigo-800 text-white underline w-full rounded py-2 mt-4 "
+            >
               Continue
             </button>
+            {/* </Link> */}
           </form>
         </div>
       </div>
