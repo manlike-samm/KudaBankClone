@@ -11,6 +11,7 @@ const initialState = {
   description: "",
   idReceiver: "",
   idSender: "",
+  transactHistory: [],
 };
 
 // const userInfo =
@@ -62,6 +63,9 @@ export const transactDetailsSlice = createSlice({
     idReceiver: (state, action) => {
       state.idReceiver = action.payload;
     },
+    transactHistory: (state, action) => {
+      state.transactHistory.push(action.payload);
+    },
   },
 });
 export const {
@@ -77,6 +81,7 @@ export const {
   users,
   idReceiver,
   idSender,
+  transactHistory,
 } = transactDetailsSlice.actions;
 
 export default transactDetailsSlice.reducer;

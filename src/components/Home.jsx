@@ -18,6 +18,8 @@ import userAva from "../images/user1.jpg";
 import { client } from "../client";
 
 import {
+  creditReceiver,
+  debitSender,
   idSender,
   sendersAcntBal,
   sendersAcntNumber,
@@ -25,6 +27,8 @@ import {
 } from "../features/accountName/transactDetailsSlice";
 
 const Home = () => {
+  const transactions = useSelector((state) => state.transact.transactHistory);
+
   const [userInfo, setUserInfo] = useState([]);
 
   const dispatch = useDispatch();
@@ -33,14 +37,19 @@ const Home = () => {
     const query = '*[_type == "userInfo"]';
 
     client.fetch(query).then((data) => {
-      setUserInfo(data[1]);
+      setUserInfo(data[2]);
       dispatch(users(data));
-      //   localStorage.setItem("user", JSON.stringify(data[1]));
+      localStorage.setItem("user", JSON.stringify(data[2]));
     });
-  }, []);
+  }, [transactions]);
   console.log(userInfo);
+  const user =
+    localStorage.getItem("user") !== "undefined"
+      ? JSON.parse(localStorage.getItem("user"))
+      : localStorage.clear();
+
   useEffect(() => {
-    if (userInfo) {
+    if (user) {
       dispatch(sendersAcntBal(userInfo.accountBalance));
       dispatch(sendersAcntNumber(userInfo.accountNumber));
       dispatch(idSender(userInfo._id));
@@ -70,11 +79,16 @@ const Home = () => {
         </div>
         <div className="Balance shadow-lg my-4 m-auto flex flex-col items-center rounded-lg bg-indigo-900 text-white">
           <p className="text-xs mt-2">Account Balance</p>
-          <p className="text-2xl font-bold text-sky-400">
-            ₦
-            {userInfo?.accountBalance &&
-              new Intl.NumberFormat().format(userInfo.accountBalance)}
-          </p>
+
+          {accountBalance ? (
+            <p className="text-2xl font-bold text-sky-400">
+              {" "}
+              ₦{new Intl.NumberFormat().format(accountBalance)}{" "}
+            </p>
+          ) : (
+            <p className=" text-xs italic text-sky-400"> fetching details...</p>
+          )}
+
           <div className="flex justify-around space-x-12 my-2">
             <div className=" flex flex-col items-center">
               <div className=" opacity-100">
