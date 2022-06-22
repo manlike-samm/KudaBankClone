@@ -31,7 +31,6 @@ const TransactionHistory = () => {
           </div>
         </div>
       ))}
-      ;
     </>
   );
 };

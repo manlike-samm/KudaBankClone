@@ -80,7 +80,7 @@ const Home = () => {
         <div className="Balance shadow-lg my-4 m-auto flex flex-col items-center rounded-lg bg-indigo-900 text-white">
           <p className="text-xs mt-2">Account Balance</p>
 
-          {accountBalance ? (
+          {userInfo.accountBalance ? (
             <p className="text-2xl font-bold text-sky-400">
               {" "}
               ₦{new Intl.NumberFormat().format(accountBalance)}{" "}

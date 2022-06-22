@@ -9,7 +9,6 @@ import {
   Cards,
   More,
   Sendmoney,
-  ReduxTest,
   BeCareful,
   Confirm,
 } from "./components";
@@ -27,7 +26,6 @@ const App = () => {
             <Route exact path="/cards" element={<Cards />} />
             <Route exact path="/more" element={<More />} />
             <Route exact path="/sendmoney" element={<Sendmoney />} />
-            <Route exact path="/REDT" element={<ReduxTest />} />
             <Route exact path="/becareful" element={<BeCareful />} />
             <Route exact path="/confirm" element={<Confirm />} />
           </Routes>

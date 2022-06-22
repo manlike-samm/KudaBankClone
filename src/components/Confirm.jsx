@@ -170,7 +170,6 @@ const Confirm = () => {
             </button>
           </>
         )}
-        ;
       </div>
     </>
   );
